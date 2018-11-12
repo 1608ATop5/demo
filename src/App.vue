@@ -16,6 +16,7 @@ export default {
 
 <style>
 	@import url("./assets/css/reset.css");
+	@import url("./assets/font/iconfont.css");
 *{margin: 0;padding: 0;}
 a{text-decoration:none;color:black;}
 ul,ol{list-style:none;}

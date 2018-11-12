@@ -6,8 +6,12 @@ import MyHot from "@/views/hot/hot"
 import MyRecommend from "@/views/recommend/recommend"
 import MySinger from "@/views/singer/singer"
 import MySearch from "@/views/search/search"
+import project from '@/components/project'
 
 import defaultList from '@/views/hot/defaultList'
+
+import demo1 from '@/components/demo'
+import details from "@/components/details/details"
 
 let routes = [
     {
@@ -15,6 +19,10 @@ let routes = [
 //    name: 'HelloWorld',
 //    component: HelloWorld
 		redirect:'/MyLogin'
+    },
+    {
+    	path:"/demo1",
+    	component:demo1
     },
     {
     	path:"/MyLogin",
@@ -31,25 +39,57 @@ let routes = [
     {
 		path:"/MyHot",
 		component:MyHot,
-			children:[
-				{
-					path:'defaultList/:id',
-					component:defaultList
-				}
-			]
+		children:[
+			{
+				path:'defaultList',
+				component:defaultList
+			}
+		]
 	},	
 	{
 		path:"/MyRecommend",
-		component:MyRecommend
+		component:MyRecommend,
+		children:[
+			{
+				path:'defaultList',
+				component:defaultList
+				
+			}
+		]
 	},
 	{
 		path:"/MySinger",
-		component:MySinger
+		component:MySinger,
+		children:[
+			{
+				path:'defaultList',
+				component:defaultList,
+				children:[
+					{
+						path:"details",
+						component:details
+					}
+				]
+			}
+		]
 	},
 	{
 		path:"/MySearch",
-		component:MySearch
+		component:MySearch,
+		children:[
+			{
+				path:"details",
+				component:details
+			}
+		]
+	},
+	{
+		path:"/project",
+		component:project
+	},
+	{
+		path:"/details",
+		component:details
 	}
-    
   ]
 export default routes;

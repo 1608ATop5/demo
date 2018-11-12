@@ -23,12 +23,14 @@
 </template>
 
 <script>
-import swipers from "@/components/swipers/swipers"
+import swipers from "@/components/swipers/swipers";
+import {mapMutations} from 'vuex'
   export default{
   	data(){
   		return {
   			hotDatas:[],
-  			flag:true
+  			flag:true,
+  			xlist:[]
   		}
   	},
   	components:{
@@ -38,20 +40,42 @@ import swipers from "@/components/swipers/swipers"
   		this.axios.get("../../static/json/hotDatas.json").then(res=>{
   			this.hotDatas = res.data.data.list;
   		})
+  		this.axios.get("../../static/json/songList.json").then(res => {
+//				console.log(res.data.cdlist[0].songlist);
+//	console.log(res);
+				res.data.cdlist[0].songlist.forEach(item=>{
+
+					this.xlist.push({
+						"songname":item.songname,
+						"id":item.albumid,
+						"singername":item.albumname,
+						"picImg":`https://y.gtimg.cn/music/photo_new/T002R300x300M000${item.albummid}.jpg?max_age=2592000`,
+						'url':`http://dl.stream.qqmusic.qq.com/http://dl.stream.qqmusic.qq.com/C400${item.songmid}.m4a?guid=2088301926&vkey=EA1C7C91D5305C7ADDB67544E0946E931DAAA67331FDB4C5E18D865F4EC28171B3CEC5B584D1C932BE3395AC8FF79D62001C20C4168A0F23&uin=0&fromtag=38`,
+						"interval":item.interval
+					})
+				})
+  		})
   	},
   	methods:{
+  		...mapMutations(["set_list"]),
   		btn(){
   			this.axios.get('/apis/hotData').then(res=>{
 	  			console.log(res);
 	  		})
   		},
   		getlist(item){
-  			
+			this.set_list({
+				"title":item.dissname,
+				"id":item.dissid,
+				"picUrl":item.imgurl,
+				"songList":this.xlist
+			})
+console.log(item);
   			this.$router.push({
-				path:`/MyHot/defaultList/${item.dissid}`,
-  				
+				path:`/MyHot/defaultList`,
   			})
-  		}
+  			
+		}
   	}
   }
 </script>

@@ -1,10 +1,10 @@
 <template>
 	<div class = 'defaultList'>
 		<div class = 'default_box'>
-				<img :src="list.picUrl" alt="logo" class='bgimg'/>
+				<img :src="arr.logo" alt="" class='bgimg'/>
 				<header>
 					<i @click = 'back' class = 'icon-fanhui iconfont'></i>
-					<p>{{list.title}}</p>
+					<p>{{arr.dissname}}</p>
 				</header>
 				<div class="info">
 					<i></i>
@@ -14,92 +14,63 @@
 		<div class="reco">
 			<bscroll>
 				<div class="list">
-					<div class="list-item" v-for='item,index in list.songList' @click = 'navto(item,index)'>
+					<div class="list-item" v-for='item,index in obj'>
 						<p class = "p1">{{item.songname}}</p>
-						<p class = "p2">{{item.singername}}</p>
+						<p class = "p2">{{item.albumname}}</p>
 					</div>
 				</div>
 			</bscroll>
 		</div>
-		<transition name='slide'>
-			<router-view />
-		</transition>
 	</div>
 </template>
+
 <script>
-	import {mapGetters,mapActions,mapMutations} from "vuex"
+	import {mapGetters,mapActions} from "vuex"
 	export default{
 		created(){
-			if(!this.get_list.title){
-				this.$router.push({
-					path:"/MySinger"
-				})
-			}
+			this.increment();
 		},
 		data(){
 			return {
-				list:{},
-				currentData:{},
-				index:-1
+				id:this.$route.params.id,
+				arr:{},
+				obj:[]
 			}
 		},
 		methods:{
-			...mapMutations([
-				"set_singerList",
-				"set_index",
-				"set_playing"
+			...mapActions([
+				'increment'
 			]),
 			back(){
 				this.$router.back();
-			},
-			navto(item,index){
-				this.$router.push({
-					path:"/MySinger/defaultList/details"
-				})
-				this.set_singerList(this.list);
-				this.set_index(index);
-				this.set_playing(true);
-			},
-			back1(){
-				this.flag = false;
 			}
 		},
 		mounted(){
-			this.list = this.get_list;
+			this.axios.get("../../../static/json/songList.json").then(res => {
+	  			this.arr = res.data.cdlist[0];
+	  			this.obj = res.data.cdlist[0].songlist;
+	  		})
 		},
 		computed:{
 			...mapGetters([
-				'get_list',
-				"get_singer_list",
-				"get_index"
+				'getList'
 			])
 		}
 	}
 </script>
+
 <style lang="scss" scoped>
-.slide-enter,.slide-leave-to{
-	transform:translateX(100%);
-}
-.slide-enter-active,.slide-leave-active{
-	transition:all .5s;
-}
-.slide-enter-to,.slide-leave{
-	transform:translateX(0);
-}
-.fixed{
-	position:absolute;
-	top:0;
-}
+@import url("../../assets/font/iconfont.css");
 	.defaultList{
 		width:100%;
 		background:#282828;
 		height:100vh;
 		position:absolute;
+		overflow:hidden;
 		top:0;
 		.reco{
 			width:100%;
-			height:calc(100% - 300px);
-			overflow:hidden;
+			height:calc(100% - 200px);
 		}
 		.default_box{
 			position:relative;
@@ -107,16 +78,17 @@
 				position:absolute;
 				bottom:20px;
 				color:#ffd100;
-				border-radius:30px;
+				border-radius:16px;
 				border:1px solid #ffd100;
 				left:50%;
 				transform:translate(-50%);
-				padding:15px;
+				padding:5px 10px;
 			}
 		}
 		.bgimg{
+			display:block;
 			width:100%;
-			height:300px;
+			height:20vh;
 		}
 	header{
 		width:100%;
@@ -138,7 +110,6 @@
 	.list{
 			display:flex;
 			flex-direction:column;
-			overflow:hidden;
 			.list-item{
 				margin:10px 0;
 				width:calc(100% - 40px);
@@ -150,6 +121,7 @@
 				}
 				.p1{
 					color:#fff;
+					
 				}
 				.p2{
 					color:gray;

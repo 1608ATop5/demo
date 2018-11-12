@@ -13,6 +13,17 @@
 		<input type="text" placeholder="请输入验证码"/>
 		<div class = "getVeri" v-show='veriShow' @click ='getS'>获取验证码</div>
 		<div class = "getVeri" v-show='!veriShow'>{{second}}s后重新发送</div>
+		
+		
+		<div>
+			<div class = 'file-box'>
+				<div class="file-pic">拍照</div>
+         		<input type="file" accept="image/*" mutiple="mutiple"/>
+         	</div>
+      		<input type="file" />
+     		<input type="file" accept="image/*" mutiple="mutiple" capture="camera"/>
+            <input type="file" accept="image/*">
+        </div>
 	</div>
 </template>
 <script>
@@ -83,6 +94,18 @@
 </script>
 
 <style lang="scss" scoped>
+.file-box{
+	position:relative;
+}
+.file-box input{
+	opacity:0;
+	position:absolute;
+	top:0;
+}
+.file-pic{
+	height:40px;
+	line-height:40px;
+}
 	.getVeri{
 		background:#ddd;
 		height:50px;

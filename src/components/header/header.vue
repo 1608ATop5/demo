@@ -5,7 +5,7 @@
 				<i class = 'iconfont icon-bofang'></i>
 				<span>Music player</span>
 			</div>
-			<i class = 'iconfont icon-shenfenzheng'></i>
+			<i class = 'iconfont icon-shenfenzheng' ></i>
 		</header>
 	</div>
 </template>

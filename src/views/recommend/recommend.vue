@@ -3,11 +3,11 @@
 		<heads/>
 			<div class = 'recom_list' ref='recom1'>
 				<div>
-					<div class = "recom_box" v-for='item,indexs in arr' ref='title' v-if='arr[indexs].length'>
-						<div class = "input" v-if='arr[indexs].length'>
+					<div class = "recom_box" v-for='item,indexs in arr' ref='title' >
+						<div class = "input">
 							<p>{{item.mIndex}}<span v-if='indexs == 0'>门</span></p>
 						</div>
-						<div class = "items" v-for='items,index in arr[indexs]' v-if='arr[indexs].length'>
+						<div class = "items" v-for='items,index in arr[indexs]' @click = 'navto(items)'>
 							<img v-lazy="items.imgUrl" alt="" />
 							<p>{{items.Fsinger_name}}</p>
 						</div>
@@ -15,12 +15,16 @@
 				</div>
 			</div>
 		<div class = "recom_fixed" ref = 'lou'>
-			<p v-for='item,a in arr' @click = 'scrollElement(a)' v-if='arr[a].length' :class = "{active:a == mIndex}">{{item.mIndex}}</p>
+			<p v-for='item,a in arr' @click = 'scrollElement(a,$event)' :class = "{active:a == mIndex}">{{item.mIndex}}</p>
 		</div>
+		<transition name= 'slide'>
+			<router-view />
+		</transition>
 	</div>
 </template>
 <script>
-	import Bscroll from 'better-scroll'
+	import Bscroll from 'better-scroll';
+	import {mapMutations} from 'vuex'
 	export default{
 		data(){
 			return {
@@ -28,7 +32,8 @@
 				arr:[],
 				currentIndex:0,
 				scrollY:0,
-				ScrollHeight:[]
+				ScrollHeight:[],
+				xlist:[]
 			}
 		},
 		mounted(){
@@ -70,25 +75,55 @@ item.imgUrl = `https://y.gtimg.cn/music/photo_new/T001R300x300M000${item.Fsinger
 			this.scroll.on('scroll',position =>{
 				this.scrollY = -position.y;
 			})
+			this.axios.get("../../../static/json/singerView.json").then(res=>{
+//				console.log(res);
+				res.data.data.list.forEach(item=>{
+					
+					this.xlist.push({
+						"songname":item.musicData.songname,
+						"id":item.musicData.alertid,
+						"singername":"薛之谦",
+						"picImg":`https://y.gtimg.cn/music/photo_new/T002R300x300M000${item.musicData.albummid}.jpg?max_age=2592000`,
+						'url':`http://dl.stream.qqmusic.qq.com/http://dl.stream.qqmusic.qq.com/C400${item.musicData.songmid}.m4a?guid=2088301926&vkey=EA1C7C91D5305C7ADDB67544E0946E931DAAA67331FDB4C5E18D865F4EC28171B3CEC5B584D1C932BE3395AC8FF79D62001C20C4168A0F23&uin=0&fromtag=38`,
+						"interval":item.musicData.interval
+						
+					})
+				})
+			})
 		},
 		methods:{
-			scrollElement(index){
-				let content = this.$refs.recom1
+			...mapMutations(["set_list"]),
+			scrollElement(index,e){
+				let content = this.$refs.recom1;
 				let title = this.$refs.title;
-				let Y = this.ScrollHeight[index]
-				console.log(index);
+				let Y = this.ScrollHeight[index];
 //				console.log(index,this.ScrollHeight[index+1],this.ScrollHeight);
 //				this.scroll.scrollToElement(title[index],300);
 				this.scroll.scrollToElement(content,300,0,Y);
+			},
+			navto (item) {
+				let list = []
+				if (item.Fsinger_id === "5062") {
+					list = this.xlist;
+				}
+				this.set_list({
+					"title":item.Fsinger_name,
+					"id":item.Fsinger_id,
+					"picUrl":item.imgUrl,
+					"songList":list
+				})
+				this.$router.push({
+					path:`/MyRecommend/defaultList`,
+	  			})
 			}
 		},
 		computed:{
-			mIndex(){
+			mIndex () {
 				for(let i = 0;i < this.ScrollHeight.length;i++){
 					let prev = this.ScrollHeight[i];
 					let next = this.ScrollHeight[i+1];
 					if(this.scrollY >= prev && this.scrollY <= next){
-						return i
+						return i+1
 					}
 				}
 				return 0;
@@ -97,17 +132,27 @@ item.imgUrl = `https://y.gtimg.cn/music/photo_new/T001R300x300M000${item.Fsinger
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.slide-enter,.slide-leave-to{
+	transform:translateX(100%);
+}
+.slide-enter-active,.slide-leave-active{
+	transition:all .5s;
+}
+.slide-enter-to,.slide-leave{
+	transform:translateX(0);
+}
 	.recom_fixed{
 		position:fixed;
-		top:150px;
+		top:110px;
 		right:0px;
 		width:30px;
-		padding:20px 0;
+		padding:10px 0;
 		background: #1c1c1c;
 		border-radius:20px;
 		text-align:center;
 		p{
+			font-size:12px;
 			color:#9c9c9c;
 			margin:4px 0;
 		}
